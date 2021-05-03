@@ -17,9 +17,9 @@ class Api::V1::AccountsController < ApplicationController
   def deposit
     account_params = params.permit(:account_nr)
     account = Account.find_by_account_nr(account_params[:account_nr])
-    Transaction.create(amount: amount,tran_type: "DEPOSIT", account_id: account.id)
     return head :not_found unless account
     return head :unprocessable_entity unless Account.deposit(account, amount)
+    Transaction.create(amount: amount,tran_type: "DEPOSIT", account_id: account.id)
     render json: {message: "deposited"}, status: :ok
   end
 
@@ -28,9 +28,9 @@ class Api::V1::AccountsController < ApplicationController
     @owner_id = User.find_by_id(owner_params[:user_id])
     account_params = params.require(:account).permit(:account_nr)
     account = Account.find_by_account_nr(account_params[:account_nr])
-    Transaction.create(amount: amount,tran_type: "WITHDRAWAl", account_id: account.id)
     return head :not_found unless account
     return head :unprocessable_entity unless Account.withdraw(account, amount)
+    Transaction.create(amount: amount,tran_type: "WITHDRAWAl", account_id: account.id)
     render json: {message: "withdrawn"}, status: :ok
   end
 
@@ -38,12 +38,11 @@ class Api::V1::AccountsController < ApplicationController
     account_params = params.permit(:from_account)
     account = Account.find_by_account_nr(account_params[:from_account])
     return head :not_found unless account
-    Transaction.create(amount: amount,tran_type: "TRANSFER", account_id: account.id)
     recipient_param = params.permit(:to_account)
     recipient = Account.find_by_account_nr(recipient_param[:to_account])
     return head :not_found unless recipient
-
     return head :unprocessable_entity unless Account.transfer(account, recipient, amount)
+    Transaction.create(amount: amount,tran_type: "TRANSFER", account_id: account.id)
     render json: {message: "transferred"}
   end
 
