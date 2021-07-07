@@ -48,3 +48,5 @@ gem "bcrypt", "~> 3.1"
 gem "active_model_serializers"
 gem 'rack-cors'
 
+
+gem "rspec-rails", "~> 5.0"
